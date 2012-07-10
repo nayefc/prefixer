@@ -74,10 +74,12 @@ void test_stack() {
 
 int main(int argc, char *argv[]) {
 
-    //test stack
     test_stack();
+    
+    struct stack stack;
+    stack_init(&stack);
 
-    /*    FILE *fp;
+    FILE *fp;
     fp = fopen(argv[1], "r");
     if (fp == NULL) {
 	printf("Please pass in a file with an expression\n");
@@ -88,10 +90,15 @@ int main(int argc, char *argv[]) {
     while (!feof(fp)) {
 
 	fscanf(fp, "%c", &reading);
-
+	
+	// skip if whitspace
+	if (reading == ' ')
+	    continue;
+	
 	struct node *node = (struct node *)malloc(sizeof(struct node));
 	if (isdigit(reading)) {
-	    node->number = reading;
+	    double number = reading - '0';
+	    node->number = number;
 	    node->isNumber = 1;
 	}
 	
@@ -99,23 +106,20 @@ int main(int argc, char *argv[]) {
 	    node->character = reading;
 	    node->isNumber = 0;
 	}
-	
-	// skip if whitspace
-	if (reading == ' ')
-	    continue;
 
-	push(node);
+	push(&stack, &node->elem);
 
-	if (count() == 3) {
+	if (count(&stack) == 3) {
 
-	    struct node *node = peek();
+	    struct stack_elem *e = peek(&stack);
+	    struct node *node = stack_entry(e, struct node, elem);
 	    
 	    if (node->isNumber)
 		printf("count is 3 with top %f", node->number);
 	    else
 		printf("count is 3 with top %c", node->character);
 	}
-	} */
+    }
     
     return 0;
 }
