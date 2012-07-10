@@ -17,6 +17,12 @@ struct node {
     struct stack_elem elem;
 };
 
+struct grouped_node {
+    struct node *node1;
+    struct node *node2;
+    struct node *node3;
+};
+
 void test_stack() {
 
     struct stack test_stack;
@@ -110,6 +116,8 @@ int main(int argc, char *argv[]) {
 	push(&stack, &node->elem);
 
 	if (count(&stack) == 3) {
+
+	    struct
 
 	    struct stack_elem *e = peek(&stack);
 	    struct node *node = stack_entry(e, struct node, elem);
