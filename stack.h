@@ -1,35 +1,45 @@
-/*
- *
- * Created on: 6th July 2012
- * Author: Nayef Copty
- *
- */
-
 #ifndef _STACK_H_
 #define _STACK_H_
 
 /*
- * A stack that stores a node that holds a number and a character
+ *
+ * Created on: 10th July 2012
+ * Author: Nayef Copty
+ *
+ * A stack implementation that does not require dynamic memory allocation.
+ *
+ * The stack can hold any structure that embeds a struct stack_elem.
+ * Inspired by GNU List and the list<> template in the C++ standard library.
+ *
  */
 
-struct node {
-    double number;
-    char character;
-    struct node *next;
+#include <stdint.h>
+#include <stddef.h>
+
+struct stack_elem {
+    struct stack_elem *next;
 };
 
-struct node *top;
+struct stack {
+    struct stack_elem *top;
+};
 
-/* pushes a dynamically allocated node */
-void push(struct node *);
+/*
+ * Converts a pointer to the stack's element ptr into a pointer
+ * to the structure that ptr is embedded inside. Supply the name
+ * of the outer struct, 'type', and the member name of the stack
+ * element 'member'. Taken from the Linux kernel container_of().
+ */
+#define stack_entry(ptr, type, member) ({ \
+	    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
+	    (type *)( (char *)__mptr - offsetof(type,member) );})
 
-/* pop an allocated node - must free yourself */
-struct node * pop();
-
-struct node * peak();
-int count();
-int isEmpty();
-void clear();
-void test();
+void stack_init(struct stack *stack);
+void push(struct stack *stack, struct stack_elem *elem);
+struct stack_elem * pop(struct stack *);
+struct stack_elem * peak(struct stack *);
+int count(struct stack *);
+int isEmpty(struct stack *);
+void clear(struct stack *);
 
 #endif /* stack.h */
