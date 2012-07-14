@@ -40,6 +40,12 @@ struct stack_elem * pop(struct stack *);
 struct stack_elem * peak(struct stack *);
 int count(struct stack *);
 int isEmpty(struct stack *);
-void clear(struct stack *);
+
+/*
+ * Returns a stack with the cleared nodes contained.
+ * You must iterate through the stack, convert the pointers
+ * and free the pointers manually.
+ */
+struct stack clear(struct stack *);
 
 #endif /* stack.h */

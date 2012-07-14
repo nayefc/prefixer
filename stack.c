@@ -69,19 +69,27 @@ int isEmpty(struct stack *stack) {
 	return 0;
 }
 
-void clear(struct stack *stack) {
+struct stack clear(struct stack *stack) {
 
     if (isEmpty(stack) == 0) {
 
-	struct stack_elem *node;
-	node = stack->top;
+	struct stack cleared_nodes;
+	stack_init(&cleared_nodes);
 
-	while (node != NULL) {
-	    node = stack->top->next;
+	struct stack_elem *elem;
+	elem = stack->top;
+
+	while (elem != NULL) {
+
+	    push(&cleared_nodes, elem);
+	    
+	    elem = stack->top->next;
 	    stack->top = NULL;
-	    stack->top = node;
+	    stack->top = elem;
 	}
 
 	stack->top = NULL;
+
+	return cleared_nodes;
     }
 }
