@@ -27,6 +27,7 @@ int isOperator(char p);
 void build_expression(struct stack *operator_stack, struct stack *operand_stack);
 int precedence_calculator(char operator1, char operator2);
 void preorder_traversal(struct node *root);
+void free_tree(struct node *root);
 void test_stack();
 
 int main(int argc, char *argv[]) {
@@ -172,6 +173,7 @@ int main(int argc, char *argv[]) {
     preorder_traversal(root);
     printf("\n");
 
+    free_tree(root);
     
     return 0;
 }
@@ -256,6 +258,15 @@ void preorder_traversal(struct node *root) {
 	printf(") ");
 }
 
+void free_tree(struct node *root) {
+    if (root == NULL)
+	return;
+
+    free_tree(root->right);
+    free_tree(root->left);
+    free(root);
+}
+
 void test_stack() {
 
     struct stack test_stack;
@@ -297,15 +308,16 @@ void test_stack() {
     second_node = NULL;
     struct stack_elem *popped = pop(&test_stack);
     second_node = stack_entry(popped, struct node, elem);
-    assert(converted_node->character == 'z');
-    assert(converted_node->number == 10);
-    assert(converted_node->isNumber == 0);
+    free(second_node);
     
     assert(count(&test_stack) == 1);
     assert(isEmpty(&test_stack) == 0);
-
-    clear(&test_stack);
-
+    
+    first_node = NULL;
+    popped = pop(&test_stack);
+    first_node = stack_entry(popped, struct node, elem);
+    free(first_node);
+    
     assert(count(&test_stack) == 0);
     assert(isEmpty(&test_stack) == 1);
 }
