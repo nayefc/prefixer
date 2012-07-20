@@ -15,19 +15,19 @@
 struct node {
     int number;
     char character;
+    struct node *left;
+    struct node *right;
     int isNumber;
+    int isTree;
+    int isRightLeaf;
     struct stack_elem elem;
 };
 
-struct grouped_node {
-    struct node *node1;
-    struct node *node2;
-    struct node *node3;
-    struct stack_elem elem;
-};
-
-void test_stack();
+int isOperator(char p);
+void build_expression(struct stack *operator_stack, struct stack *operand_stack);
 int precedence_calculator(char operator1, char operator2);
+void preorder_traversal(struct node *root);
+void test_stack();
 
 int main(int argc, char *argv[]) {
 
@@ -53,154 +53,178 @@ int main(int argc, char *argv[]) {
     }    
     char *p;
     p = buf;
-    //    unsigned long int str_len;
-    //    str_len = strlen(buf) - 1;
-    
-    int i;
-    for (i = 0; i < str_len; i++) {//while (*p != '\0') {
+
+    while (*p != '\0' && *p != '\n') {
 
 	if (*p == ' ') {
 	    p++;
 	    continue;
 	}
-
-	int isDigit;
-	int digit;
-	if (isdigit(*p)) {
-	    isDigit = 1;
-	    sscanf(p, "%d", &digit);
-	}
+	
+	if (isOperator(*p)) {
 	    
-	else
-	    isDigit = 0;
-
-	// operand
-	if (isDigit) {
-	    struct node *node = (struct node *)malloc(sizeof(struct node));
-	    int x = 0;
-	    sscanf(p, "%d", &x);
-	    node->number = x;
-	    node->isNumber = 1;
-	    push(&operand_stack, &node->elem);
-	    
-	    int digit_length = log10(x) + 1;
-	    int i;
-	    for (i = 0; i < digit_length; i++)
-		p++;
-	    continue;
-	}
-
-	else {
-
 	    struct node *operator_top;
 	    if (!isEmpty(&operator_stack)) {
 		struct stack_elem *e = peek(&operator_stack);
 		operator_top = stack_entry(e, struct node, elem);
 	    }
-	    
+
+	    // if scanned character is open bracket, or operator stack is empty, or scanned character has higher precendence than stack top
 	    if (*p == OPEN_BRACKET || isEmpty(&operator_stack) || precedence_calculator(*p, operator_top->character)) {
+
 		struct node *node = (struct node *)malloc(sizeof(struct node));
+		if (node == NULL) {
+		    printf("Out of memory\n");
+		    exit(1);
+		}
+		
 		node->character = *p;
 		node->isNumber = 0;
+		node->isTree = 0;
 		push(&operator_stack, &node->elem);
-		
+
 		p++;
 		continue;
 	    }
 
 	    else if (*p == CLOSED_BRACKET) {
-
+		
+		operator_top = stack_entry(peek(&operator_stack), struct node, elem);
+		
 		while (operator_top->character != '(') {
-
-		    struct stack_elem *operator_e = pop(&operator_stack);
-		    struct node *operator = stack_entry(operator_e, struct node, elem);
-		    
-		    struct stack_elem *e1 = pop(&operand_stack);
-		    struct node *operand2 = stack_entry(e1, struct node, elem);
-		    
-		    struct stack_elem *e2 = pop(&operand_stack);
-		    struct node *operand1 = stack_entry(e2, struct node, elem);
-
-		    push(&operand_stack, &operator->elem);
-		    push(&operand_stack, &operand1->elem);
-		    push(&operand_stack, &operand2->elem);
-
-		    struct stack_elem *e = peek(&operator_stack);
-		    operator_top = stack_entry(e, struct node, elem);
+		    build_expression(&operator_stack, &operand_stack);
+		    operator_top = stack_entry(peek(&operator_stack), struct node, elem);
 		}
+
 
 		struct stack_elem *open_bracket_e = pop(&operator_stack);
 		struct node *open_bracket = stack_entry(open_bracket_e, struct node, elem);
 		free(open_bracket);
+
+		p++;
+		continue;
 	    }
 
-	    else if (precedence_calculator(operator_top->character, *p) == 0) {
-		
-		while (!isEmpty(&operator_stack) && precedence_calculator(operator_top->character, *p) == 0) {
-
-		    struct stack_elem *operator_e = pop(&operator_stack);
-		    struct node *operator = stack_entry(operator_e, struct node, elem);
-		    
-		    struct stack_elem *e1 = pop(&operand_stack);
-		    struct node *operand2 = stack_entry(e1, struct node, elem);
-		    
-		    struct stack_elem *e2 = pop(&operand_stack);
-		    struct node *operand1 = stack_entry(e2, struct node, elem);
-		    
-		    push(&operand_stack, &operator->elem);
-		    push(&operand_stack, &operand1->elem);
-		    push(&operand_stack, &operand2->elem);
+	    // if stack top has higher precendence than scanned character
+	    else if (precedence_calculator(operator_top->character, *p)) {
+				
+		while (operator_top != NULL && precedence_calculator(operator_top->character, *p)) {
+		    build_expression(&operator_stack, &operand_stack);
+		    if (isEmpty(&operator_stack))
+			break;
+		    struct stack_elem *e = pop(&operator_stack);
+		    e = e->next;
+		    operator_top = stack_entry(e, struct node, elem);
 		}
-
+		
 		struct node *node = (struct node *)malloc(sizeof(struct node));
+		if (node == NULL) {
+		    printf("Out of memory\n");
+		    exit(1);
+		}
+		
 		node->character = *p;
 		node->isNumber = 0;
+		node->isTree = 0;
 		push(&operator_stack, &node->elem);
+		
+		p++;
+		continue;
 	    }
 	}
-    }
 
-    while (!isEmpty(&operator_stack)) {
-	struct stack_elem *operator_e = pop(&operator_stack);
-	struct node *operator = stack_entry(operator_e, struct node, elem);
+	// else if operand
+	else {
 	
-	struct stack_elem *e1 = pop(&operand_stack);
-	struct node *operand2 = stack_entry(e1, struct node, elem);
+	    struct node *node = (struct node *)malloc(sizeof(struct node));
+	    if (node == NULL) {
+		printf("Out of memory\n");
+		exit(1);
+	    }
 	
-	struct stack_elem *e2 = pop(&operand_stack);
-	struct node *operand1 = stack_entry(e2, struct node, elem);
+	    int x = 0;
+	    sscanf(p, "%d", &x);
+	    node->number = x;
+	    node->isNumber = 1;
+	    node->isTree = 0;
+	    push(&operand_stack, &node->elem);
 	
-	push(&operand_stack, &operator->elem);
-	push(&operand_stack, &operand1->elem);
-	push(&operand_stack, &operand2->elem); 
+	    int digit_length = log10(x) + 1;
+	    int i;
+	    for (i = 0; i < digit_length; i++)
+		p++;
+
+	    continue;
+	}
     }
     
-    // operand stack is final expression
-    printf("Stack count: %d\n", count(&operand_stack));
+    while (!isEmpty(&operator_stack))
+	build_expression(&operator_stack, &operand_stack);
     
-    /*
-     * Iterate stack
-     */
-    struct stack_elem *e = peek(&operand_stack);
-    while (e != NULL) {
-	
-	struct node *node = stack_entry(e, struct node, elem);
-	if (node->isNumber)
-	    printf("%d ", node->number);
-	else
-	    printf("%c ", node->character);
-	e = e->next;
-    }
+    if (count(&operand_stack) > 1 && count(&operator_stack) > 0) {
+	printf("Error in algorithm.\n");
+	exit(1);
+    };
+
+    struct stack_elem *root_element = peek(&operand_stack);
+    struct node *root = stack_entry(root_element, struct node, elem);
+
+    preorder_traversal(root);
     printf("\n");
+
     
     return 0;
 }
 
+int isOperator(char p) {
+    switch (p) {
+    case '(':
+	return 1;
+	break;
+    case ')':
+	return 1;
+	break;
+    case '*':
+	return 1;
+	break;
+    case '/':
+	return 1;
+	break;
+    case '+':
+	return 1;
+	break;
+    case '-':
+	return 1;
+	break;
+    default:
+	return 0;
+    }
+}
+
+void build_expression(struct stack *operator_stack, struct stack *operand_stack) {
+
+    struct stack_elem *operator_element = pop(operator_stack);
+    struct node *operator = stack_entry(operator_element, struct node, elem);
+
+    struct stack_elem *operand2_element = pop(operand_stack);
+    struct node *operand2 = stack_entry(operand2_element, struct node, elem);
+    operand2->isRightLeaf = 1;
+    
+    struct stack_elem *operand1_element = pop(operand_stack);
+    struct node *operand1 = stack_entry(operand1_element, struct node, elem);
+    operand1->isRightLeaf = 0;
+    
+    operator->isTree = 1;
+    operator->left = operand1;
+    operator->right = operand2;
+    push(operand_stack, &operator->elem);
+}
+
 int operator_rank(char operator) {
     if (operator == OPEN_BRACKET)
-	return 5;
+	return 0;
     else if (operator == CLOSED_BRACKET)
-	return 5;
+	return 0;
     else if (operator == DIVISION)
 	return 4;
     else if (operator == MULTIPLICATION)
@@ -212,11 +236,24 @@ int operator_rank(char operator) {
 }
 
 int precedence_calculator(char operator1, char operator2) {
-
     int op1rank = operator_rank(operator1);
     int op2rank = operator_rank(operator2);
-
     return (op1rank > op2rank ? 1 : 0);
+}
+
+void preorder_traversal(struct node *root) {    
+    if (root == NULL)
+	return;
+
+    if (root->isNumber)
+	printf("%d ", root->number);
+    else
+	printf("(%c ", root->character);
+    preorder_traversal(root->left);
+    preorder_traversal(root->right);
+
+    if (root->isRightLeaf)
+	printf(") ");
 }
 
 void test_stack() {
