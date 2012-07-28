@@ -1,7 +1,6 @@
-prefixer
-========
+# prefixer
 
-Written by Nayef Copty.
+## Written by Nayef Copty.
 
 Converts an infix expression into a prefix expression.
 Build prefixer.c, run the binary file and supply an input file with an infix expression. Make sure to separate all numbers/characters with whitespaces.
@@ -13,19 +12,21 @@ Currently supports:
 - Division
 - Variables and numbers as operands
 - Postiive integers only
--- REDUCTION COMING SOON -
 
-How to use:
-===========
-Prefixer:
-Build: gcc prefixer.c
-Run: ./a.out file name
+# Usage
+## Prefixer:
+### Build:
+$ gcc prefixer.c
+### Run: 
+$ ./a.out file name
 When running, please make sure that the file exists. You will get a parsing error if not instead of a "file not found" error.
 I kept it this way to reduce the passing of variables. This would be needed for my test program below.
 
-Test:
-Build: gcc test.c -o test
-Run: ./test
+## Test:
+### Build:
+$ gcc test.c -o test
+### Run:
+$ ./test
 
 In order to use my automated testing class, please make sure the prefixer.c binary file is called "./a.out"
 
