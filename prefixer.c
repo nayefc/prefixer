@@ -262,7 +262,7 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 
     if (reduce == 1) {
 
-	if (operand1->isNumber && operand2->isNumber) {
+	if (operand1->isOperand && operand2->isOperand && operand1->isNumber && operand2->isNumber) {
 
 	    int total;
 
