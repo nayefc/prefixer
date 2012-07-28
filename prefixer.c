@@ -273,7 +273,12 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		if (operator->value.character == '*')
 		    total = operand1->value.number * operand2->value.number;
 		else if (operator->value.character == '/') {
+		    if (operand2->value.number == 0) {
+			fprintf(stderr, "Division by zero error.\n");
+			exit(1);
+		    }
 		    total = operand1->value.number / operand2->value.number;
+		}
 		else if (operator->value.character == '+')
 		    total = operand1->value.number + operand2->value.number;
 		else if (operator->value.character == '-')
