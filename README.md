@@ -25,6 +25,8 @@ Test:
 Build: gcc test.c -o test
 Run: ./test
 
+In order to use my automated testing class, please make sure the prefixer.c binary file is called "./a.out"
+
 Output format:
 ==============
 All operators and operands will be separated by whitespace apart from the first operator/operand. Output will be followed by a whitespace and a newline (\n) character. The output is also wrapped in parenthesis.
