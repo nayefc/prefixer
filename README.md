@@ -16,17 +16,17 @@ Currently supports:
 # Usage
 ## Prefixer:
 ### Build:
-$ gcc prefixer.c
+    $ gcc prefixer.c
 ### Run: 
-$ ./a.out file name [-r]
+    $ ./a.out file name [-r]
 When running, please make sure that the file exists. You will get a parsing error if not instead of a "file not found" error.
 I kept it this way to reduce the passing of variables. This would be needed for my test program below.
 
 ## Test:
 ### Build:
-$ gcc test.c -o test
+    $ gcc test.c -o test
 ### Run:
-$ ./test
+    $ ./test
 
 In order to use my automated testing class, please make sure the prefixer.c binary file is called "./a.out"
 
