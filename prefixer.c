@@ -1,3 +1,8 @@
+/*
+ * prefixer.c
+ * Created by: Nayef Copty
+ */
+
 #include "stack.c"
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,7 +76,9 @@ int main(int argc, char *argv[]) {
     if (fgets(buf, 50, fp) == NULL) {
 	fprintf(stderr, "Error in file parsing. Error: %s\n", strerror(errno));
 	exit(1);
-    }    
+    }
+    
+    fclose(fp);
     char *p;
     p = buf;
 
@@ -268,7 +275,7 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 	    // digit operand reductions
 	    if (operand1->isNumber && operand2->isNumber) {
 
-		int total;
+		int total = 0;
 
 		if (operator->value.character == '*')
 		    total = operand1->value.number * operand2->value.number;
@@ -288,8 +295,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		operator->value.number = total;
 		operator->isNumber = 1;
 		operator->isOperand = 1;
-		free(operator->left);
-		free(operator->right);
 		operator->left = NULL;
 		operator->right = NULL;
 		push(operand_stack, &operator->elem);
@@ -311,8 +316,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 0;
 			operator->isTree = 0;
 			operator->isOperand = 1;
-			free(operator->left);
-			free(operator->right);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -324,8 +327,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 1;
 			operator->isTree = 0;
 			operator->isOperand = 1;
-			free(operator->left);
-			free(operator->right);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -351,8 +352,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 1;
 			operator->isTree = 0;
 			operator->isOperand = 1;
-			free(operator->left);
-			free(operator->right);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -363,8 +362,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 0;
 			operator->isTree = 0;
 			operator->isOperand = 1;
-			free(operator->left);
-			free(operator->right);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -375,8 +372,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 1;
 			operator->isTree = 0;
 			operator->isOperand = 1;
-			free(operator->left);
-			free(operator->right);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -399,8 +394,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			    operator->isNumber = 1;
 			    operator->isTree = 0;
 			    operator->isOperand = 1;
-			    free(operator->left);
-			    free(operator->right);
 			    operator->left = NULL;
 			    operator->right = NULL;
 			    push(operand_stack, &operator->elem);

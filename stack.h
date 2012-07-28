@@ -3,8 +3,8 @@
 
 /*
  *
- * Created on: 10th July 2012
- * Author: Nayef Copty
+ * stack.h
+ * Created by: Nayef Copty
  *
  * A stack implementation that does not require dynamic memory allocation.
  *

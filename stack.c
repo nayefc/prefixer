@@ -1,8 +1,6 @@
 /*
- *
- * Created on: 9th July 2012
- * Author: Nayef Copty
- *
+ * stack.c
+ * Created by: Nayef Copty
  */
 
 #include "stack.h"
