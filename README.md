@@ -20,6 +20,8 @@ How to use:
 Prefixer:
 Build: gcc prefixer.c
 Run: ./a.out file name
+When running, please make sure that the file exists. You will get a parsing error if not instead of a "file not found" error.
+I kept it this way to reduce the passing of variables. This would be needed for my test program below.
 
 Test:
 Build: gcc test.c -o test

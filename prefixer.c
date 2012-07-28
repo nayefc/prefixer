@@ -169,9 +169,7 @@ int main(int argc, char *argv[]) {
 		int x = 0;
 		sscanf(p, "%d", &x);
 		node->value.number = x;
-		node->isOperand = 1;
 		node->isNumber = 1;
-		node->isTree = 0;
 		push(&operand_stack, &node->elem);
 
 		int digit_length;
@@ -187,12 +185,15 @@ int main(int argc, char *argv[]) {
 
 	    else {
 		node->value.character = *p;
-		node->isOperand = 1;
 		node->isNumber = 0;
-		node->isTree = 0;
 		push(&operand_stack, &node->elem);
 		p++;
 	    }
+
+	    node->isOperand = 1;
+	    node->isTree = 0;
+	    node->left = NULL;
+	    node->right = NULL;
 
 	    continue;
 	}
@@ -282,6 +283,13 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 	    operator->right = NULL;
 	    push(operand_stack, &operator->elem);
 	}
+	
+	else {
+	    operator->isTree = 1;
+	    operator->left = operand1;
+	    operator->right = operand2;
+	    push(operand_stack, &operator->elem);
+	}
     }
 
     else {
@@ -319,7 +327,6 @@ void reduce(struct node *root) {
 
     // constant folding
     constant_folding(root);
-    //    constant_folding(root);
 }
 
 void constant_folding(struct node *root) {
