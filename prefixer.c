@@ -208,6 +208,9 @@ int main(int argc, char *argv[]) {
     
     struct stack_elem *root_element = peek(&operand_stack);
     struct node *root = stack_entry(root_element, struct node, elem);
+
+    //    if (reduce_flag == 1)
+    //	reduce(root);
     
     preorder_traversal(root);
     printf("\n");
@@ -275,7 +278,9 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 	    operator->value.number = total;
 	    operator->isNumber = 1;
 	    operator->isOperand = 1;
-	    push(operand_stack, &operator->elem);	    
+	    operator->left = NULL;
+	    operator->right = NULL;
+	    push(operand_stack, &operator->elem);
 	}
     }
 
