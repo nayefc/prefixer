@@ -262,28 +262,156 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 
     if (reduce == 1) {
 
-	if (operand1->isOperand && operand2->isOperand && operand1->isNumber && operand2->isNumber) {
+	// check that both operands are actually end operands and not operator nodes
+	if (operand1->isOperand && operand2->isOperand) {
+	    
+	    // digit operand reductions
+	    if (operand1->isNumber && operand2->isNumber) {
 
-	    int total;
+		int total;
 
-	    if (operator->value.character == '*')
-		total = operand1->value.number * operand2->value.number;
-	    else if (operator->value.character == '/')
-		total = operand1->value.number / operand1->value.number;
-	    else if (operator->value.character == '+')
-		total = operand1->value.number + operand2->value.number;
-	    else if (operator->value.character == '-')
-		total = operand1->value.number - operand2->value.number;
+		if (operator->value.character == '*')
+		    total = operand1->value.number * operand2->value.number;
+		else if (operator->value.character == '/')
+		    total = operand1->value.number / operand1->value.number;
+		else if (operator->value.character == '+')
+		    total = operand1->value.number + operand2->value.number;
+		else if (operator->value.character == '-')
+		    total = operand1->value.number - operand2->value.number;
 
-	    operator->isTree = 0;
-	    operator->value.number = total;
-	    operator->isNumber = 1;
-	    operator->isOperand = 1;
-	    operator->left = NULL;
-	    operator->right = NULL;
-	    push(operand_stack, &operator->elem);
+		operator->isTree = 0;
+		operator->value.number = total;
+		operator->isNumber = 1;
+		operator->isOperand = 1;
+		operator->left = NULL;
+		operator->right = NULL;
+		push(operand_stack, &operator->elem);
+	    }
+	    
+	    // non-digit operand reductions
+	    else {
+		
+		if (operator->value.character == '*') {
+
+		    if (operand1->isNumber && operand1->value.number == 1 ||
+			operand2->isNumber && operand2->value.number == 1) {
+
+			if (operand1->isNumber )
+			    operator->value.character = operand2->value.character;
+			else if (operand2->isNumber)
+			    operator->value.character = operand1->value.character;
+			
+			operator->isNumber = 0;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
+		    }
+		    
+		    else if (operand1->isNumber && operand1->value.number == 0 ||
+			operand2->isNumber && operand2->value.number == 0) {
+			operator->value.number = 0;
+			operator->isNumber = 1;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
+		    }
+
+		    else {
+			operator->isTree = 1;
+			operator->left = operand1;
+			operator->right = operand2;
+			push(operand_stack, &operator->elem);
+		    }
+		}
+		
+		else if (operator->value.character == '/') {
+
+		    if (operand2->value.number == 0) {
+			fprintf(stderr, "Division by zero error\n");
+			exit(1);
+		    }
+		    
+		    else if (operand1->value.number == 0) {
+			operator->value.number = 0;
+			operator->isNumber = 1;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
+		    }		    
+		    
+		    else if (operand2->value.number == 1) {
+			operator->value.character = operand1->value.character;
+			operator->isNumber = 0;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
+		    }
+
+		    else if (operand1->value.character == operand2->value.character) {
+			operator->value.number = 1;
+			operator->isNumber = 1;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
+		    }
+		    
+		    else {
+			operator->isTree = 1;
+			operator->left = operand1;
+			operator->right = operand2;
+			push(operand_stack, &operator->elem);
+		    }
+		}
+		
+		else if (!operand1->isNumber && !operand2->isNumber) {
+		    
+		    if (operand1->value.character == operand2->value.character) {
+			
+			if (operator->value.character == '-') {
+			    operator->value.number = 0;
+			    operator->isNumber = 1;
+			    operator->isTree = 0;
+			    operator->isOperand = 1;
+			    operator->left = NULL;
+			    operator->right = NULL;
+			    push(operand_stack, &operator->elem);
+			}
+			
+			else {
+			    operator->isTree = 1;
+			    operator->left = operand1;
+			    operator->right = operand2;
+			    push(operand_stack, &operator->elem);
+			}
+		    }
+		    
+		    else {
+			operator->isTree = 1;
+			operator->left = operand1;
+			operator->right = operand2;
+			push(operand_stack, &operator->elem);
+		    }
+		}
+		
+		else {
+		    operator->isTree = 1;
+		    operator->left = operand1;
+		    operator->right = operand2;
+		    push(operand_stack, &operator->elem);
+		}
+	    }
 	}
-	
+
 	else {
 	    operator->isTree = 1;
 	    operator->left = operand1;
@@ -291,7 +419,7 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 	    push(operand_stack, &operator->elem);
 	}
     }
-
+    
     else {
 	operator->isTree = 1;
 	operator->left = operand1;
