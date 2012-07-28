@@ -11,5 +11,25 @@ Currently supports:
 - Subtraction
 - Multiplication
 - Division
+- Variables and numbers as operands
+- Postiive integers only
+-- REDUCTION COMING SOON -
 
-More to come..
+How to use:
+===========
+Prefixer:
+Build: gcc prefixer.c
+Run: ./a.out file name
+
+Test:
+Build: gcc test.c -o test
+Run: ./test
+
+Output format:
+==============
+All operators and operands will be separated by whitespace apart from the first operator/operand. Output will be followed by a whitespace and a newline (\n) character. The output is also wrapped in parenthesis.
+
+Automated testing:
+==================
+An auotmated testing file is provided, test.c. The test file will fork the prefixer program as a child process, and use Linux syscalls to pipe the prefixer's output
+into its own file to check for its outcome. Please read the run_child method comments to see how passing of arguments have to be formatted.
