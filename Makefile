@@ -25,4 +25,4 @@ test.o : test.c prefixer.o
 
 .PHONY: clean
 clean : 
-	-rm prefixer test
+	-rm prefixer test file.txt
