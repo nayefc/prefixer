@@ -37,7 +37,7 @@ struct stack {
 void stack_init(struct stack *stack);
 void push(struct stack *stack, struct stack_elem *elem);
 struct stack_elem * pop(struct stack *);
-struct stack_elem * peak(struct stack *);
+struct stack_elem * peek(struct stack *);
 int count(struct stack *);
 int isEmpty(struct stack *);
 
