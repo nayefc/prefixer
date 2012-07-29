@@ -295,6 +295,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		operator->value.number = total;
 		operator->isNumber = 1;
 		operator->isOperand = 1;
+		free(operand1);
+		free(operand2);
 		operator->left = NULL;
 		operator->right = NULL;
 		push(operand_stack, &operator->elem);
@@ -327,6 +329,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 1;
 			operator->isTree = 0;
 			operator->isOperand = 1;
+			free(operand1);
+			free(operand2);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -352,6 +356,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 1;
 			operator->isTree = 0;
 			operator->isOperand = 1;
+			free(operand1);
+			free(operand2);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -362,6 +368,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			operator->isNumber = 0;
 			operator->isTree = 0;
 			operator->isOperand = 1;
+			free(operand1);
+			free(operand2);
 			operator->left = NULL;
 			operator->right = NULL;
 			push(operand_stack, &operator->elem);
@@ -394,6 +402,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			    operator->isNumber = 1;
 			    operator->isTree = 0;
 			    operator->isOperand = 1;
+			    free(operand1);
+			    free(operand2);
 			    operator->left = NULL;
 			    operator->right = NULL;
 			    push(operand_stack, &operator->elem);
