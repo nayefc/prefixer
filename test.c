@@ -79,14 +79,14 @@ void run_child(char expression[50], char prefixed[50], int reduce) {
 	fclose(In);
 
 	if (reduce == 0) {
-	    if (execl("./a.out", "./a.out", "file.txt", NULL) == -1 ) {
+	    if (execl("prefixer", "prefixer", "file.txt", NULL) == -1 ) {
 		fprintf(stderr, "Error executing program\n");
 		exit(1);
 	    }
 	}
 
 	else if (reduce == 1) {
-	    if (execl("./a.out", "./a.out", "file.txt", "-r", NULL) == -1 ) {
+	    if (execl("prefixer", "prefixer", "file.txt", "-r", NULL) == -1 ) {
 		fprintf(stderr, "Error executing program\n");
 		exit(1);
 	    }

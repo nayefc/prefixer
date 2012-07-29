@@ -14,21 +14,16 @@ Currently supports:
 - Postiive integers only
 
 # Usage
-## Prefixer:
-### Build:
-    $ gcc prefixer.c
-### Run: 
-    $ ./a.out file name [-r]
-When running, please make sure that the file exists. You will get a parsing error if not instead of a "file not found" error.
-I kept it this way to reduce the passing of variables. This would be needed for my test program below.
+## Make
+    $ make
+This will produce two executable files; `prefixer` and `test`.
+## Run: 
+### Prefixer:
+    $ prefixer <file name> [-r]
+When running, please make sure that the file exists. Otherwise, a parsing error will be thrown. The program does not check whether the infix notation is valid or not. I might introduce this in a later version.
 
-## Test:
-### Build:
-    $ gcc test.c -o test
-### Run:
+### Test:
     $ ./test
-
-In order to use my automated testing class, please make sure the prefixer.c binary file is called "./a.out"
 
 Output format:
 ==============

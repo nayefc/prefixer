@@ -35,16 +35,17 @@ struct node {
 
 int isOperator(char p);
 void build_expression(struct stack *operator_stack, struct stack *operand_stack, int reduce);
+int operator_rank(char operator);
 int precedence_calculator(char operator1, char operator2);
 void reduce(struct node *root);
 void constant_folding(struct node *root);
 void preorder_traversal(struct node *root);
 void free_tree(struct node *root);
-void test_stack();
+static void test_stack();
 
 int main(int argc, char *argv[]) {
-
-    test_stack();
+    
+    void test_stack();
     
     struct stack operator_stack;
     stack_init(&operator_stack);
@@ -546,7 +547,7 @@ void free_tree(struct node *root) {
     free(root);
 }
 
-void test_stack() {
+static void test_stack() {
 
     struct stack test_stack;
     stack_init(&test_stack);

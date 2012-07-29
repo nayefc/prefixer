@@ -4,6 +4,8 @@
 *.o
 *.out
 *.dSYM
+prefixer
+test
 
 # Compiled Dynamic libraries
 *.so
