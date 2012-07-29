@@ -393,31 +393,21 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			push(operand_stack, &operator->elem);
 		    }
 		}
-		
-		else if (!operand1->isNumber && !operand2->isNumber) {
-		    
+
+		else if (operator->value.character == '-') {
+
 		    if (operand1->value.character == operand2->value.character) {
-			
-			if (operator->value.character == '-') {
-			    operator->value.number = 0;
-			    operator->isNumber = 1;
-			    operator->isTree = 0;
-			    operator->isOperand = 1;
-			    free(operand1);
-			    free(operand2);
-			    operator->left = NULL;
-			    operator->right = NULL;
-			    push(operand_stack, &operator->elem);
-			}
-			
-			else {
-			    operator->isTree = 1;
-			    operator->left = operand1;
-			    operator->right = operand2;
-			    push(operand_stack, &operator->elem);
-			}
+			operator->value.number = 0;
+			operator->isNumber = 1;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			free(operand1);
+			free(operand2);
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
 		    }
-		    
+
 		    else {
 			operator->isTree = 1;
 			operator->left = operand1;
@@ -426,6 +416,7 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		    }
 		}
 		
+		//// after here, not both are numbers -- reduce expressions with variables
 		else {
 		    operator->isTree = 1;
 		    operator->left = operand1;
@@ -434,7 +425,7 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		}
 	    }
 	}
-
+	/////////////////////////////////////////////////    after here, not both are operands -- see whether I can recursively traverse the tree and reduce sub-expressions
 	else {
 	    operator->isTree = 1;
 	    operator->left = operand1;
