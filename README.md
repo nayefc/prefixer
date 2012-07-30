@@ -43,7 +43,7 @@ into its own file to check for its outcome. Please read the run_child method com
 # Considerations:
 
 ### C vs. C++
-I was contempalting whether to start in C or C++. Of course, C++ provides a lot of conveniences over C. I decided to go with C to make it a bit more challenging.
+I was contemplating whether to start in C or C++. Of course, C++ provides a lot of conveniences over C. I decided to go with C to make it a bit more challenging.
 
 ### Design Decisions
 I started off the project by using a stack-based algorithm. Once I finished it, it was a little buggy in some caes. I also did not account for reducing the expressions.
