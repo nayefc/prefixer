@@ -1,7 +1,7 @@
 PROGS = prefixer test
 OBJECTS = prefixer.o stack.o
 TESTOBJ = test.o
-CFLAGS = -Werror -Wmissing-prototypes -g
+CFLAGS = -Werror -Wmissing-prototypes
 LIBS = -lm
 CC = gcc
 

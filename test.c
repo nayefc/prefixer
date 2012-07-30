@@ -17,7 +17,7 @@
 void run_child(char expression[50], char prefixed[50], int reduce);
 
 int main () {
-
+    
     run_child("8", "8 \n", 0);
     run_child("3 * x + ( 9 + y ) / 4", "( + ( * 3 x ) ( / ( + 9 y ) 4 ) ) \n", 0);
     run_child("y", "y \n", 0);
@@ -30,16 +30,35 @@ int main () {
     run_child("1 / ( 2 * 2 ) + ( 12 + ( x + 0 ) )", "( + ( / 1 ( * 2 2 ) ) ( + 12 ( + x 0 ) ) ) \n", 0);
 
     // Reductions
+
     run_child("1", "1 \n", 1);
     run_child("5 + 1", "6 \n", 1);
     run_child("5 + 1 * 8", "13 \n", 1);
     run_child("3 + 5 * 4", "23 \n", 1);
-    run_child("3 + 5 * 25 - 2 / 2", "127 \n", 1);
     run_child("5 - 5", "0 \n", 1);
+    run_child("3 + 5 * 25 - 2 / 2", "127 \n", 1);
     run_child("49 / ( 4 * 1)", "12 \n", 1);
+
+    run_child("a * 1", "a \n", 1);
+    run_child("1 * b", "b \n", 1);
+    run_child("c * 0", "0 \n", 1);
+    run_child("0 * d", "0 \n", 1);
+    run_child("0 / e", "0 \n", 1);
+    run_child("f / 1", "f \n", 1);
+    run_child("x / x", "1 \n", 1);
+    run_child("y - y", "0 \n", 1);
+    run_child("z - 0", "z \n", 1);
+
+    run_child("( 5 - b ) - ( 5 - b )", "0 \n", 1);
     run_child("( a - a ) - ( a - a )", "0 \n", 1);
-    
-        
+    run_child("( y / 1 ) / ( y / 1 )", "1 \n", 1);
+    run_child("( x / 5 ) / 1", "( / x 5 ) \n", 1);
+    run_child("( y * 1 ) * 1 ", "y \n", 1);
+    run_child("1 * ( x * 1 )", "x \n", 1);
+    run_child("( y - 1 ) * 0 ", "0 \n", 1);
+    run_child("0 * (y - 1 )", "0 \n", 1);
+    run_child("( a * b - 4 / 1 ) - 0", "( - ( * a b ) 4 ) \n", 1);
+         
     printf("\n---------------Automated testing passed---------------\n\n");
     return 0;
 }
@@ -114,7 +133,7 @@ void run_child(char expression[50], char prefixed[50], int reduce) {
 	exit(1);
     }
 
-    //    printf("Buffer: %s\n", buffer);
+    // printf("Buffer: %s\n", buffer);
 
     fclose(fp);
     assert(strcmp(buffer, prefixed) == 0);

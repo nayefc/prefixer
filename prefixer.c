@@ -38,8 +38,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 int operator_rank(char operator);
 int precedence_calculator(char operator1, char operator2);
 int compare_trees(struct node *node1, struct node *node2);
-void reduce(struct node *root);
-void constant_folding(struct node *root);
 void preorder_traversal(struct node *root);
 void free_tree(struct node *root);
 static void test_stack();
@@ -108,7 +106,7 @@ int main(int argc, char *argv[]) {
 		    exit(1);
 		}
 		node->value.character = *p;
-		node->isOperand = 0;
+		 node->isOperand = 0;
 		node->isNumber = -1;
 		node->isTree = 0;
 		push(&operator_stack, &node->elem);
@@ -219,9 +217,6 @@ int main(int argc, char *argv[]) {
     struct stack_elem *root_element = peek(&operand_stack);
     struct node *root = stack_entry(root_element, struct node, elem);
 
-    //    if (reduce_flag == 1)
-    //	reduce(root);
-    
     preorder_traversal(root);
     printf("\n");
 
@@ -309,8 +304,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		
 		if (operator->value.character == '*') {
 
-		    if (operand1->isNumber && operand1->value.number == 1 ||
-			operand2->isNumber && operand2->value.number == 1) {
+		    if ((operand1->isNumber && operand1->value.number == 1) ||
+			(operand2->isNumber && operand2->value.number == 1)) {
 
 			if (operand1->isNumber )
 			    operator->value.character = operand2->value.character;
@@ -325,8 +320,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			push(operand_stack, &operator->elem);
 		    }
 		    
-		    else if (operand1->isNumber && operand1->value.number == 0 ||
-			operand2->isNumber && operand2->value.number == 0) {
+		    else if ((operand1->isNumber && operand1->value.number == 0) ||
+			     (operand2->isNumber && operand2->value.number == 0)) {
 			operator->value.number = 0;
 			operator->isNumber = 1;
 			operator->isTree = 0;
@@ -348,12 +343,12 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		
 		else if (operator->value.character == '/') {
 
-		    if (operand2->value.number == 0) {
+		    if (operand2->isNumber && operand2->value.number == 0) {
 			fprintf(stderr, "Division by zero error\n");
 			exit(1);
 		    }
 		    
-		    else if (operand1->value.number == 0) {
+		    else if (operand1->isNumber && operand1->value.number == 0) {
 			operator->value.number = 0;
 			operator->isNumber = 1;
 			operator->isTree = 0;
@@ -365,7 +360,7 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			push(operand_stack, &operator->elem);
 		    }		    
 		    
-		    else if (operand2->value.number == 1) {
+		    else if (operand2->isNumber && operand2->value.number == 1) {
 			operator->value.character = operand1->value.character;
 			operator->isNumber = 0;
 			operator->isTree = 0;
@@ -377,7 +372,8 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 			push(operand_stack, &operator->elem);
 		    }
 
-		    else if (operand1->value.character == operand2->value.character) {
+		    else if ((!operand1->isNumber && !operand2->isNumber) &&
+			     (operand1->value.character == operand2->value.character)) {
 			operator->value.number = 1;
 			operator->isNumber = 1;
 			operator->isTree = 0;
@@ -397,9 +393,22 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 
 		else if (operator->value.character == '-') {
 
-		    if (operand1->value.character == operand2->value.character) {
+		    if ((!operand1->isNumber && !operand2->isNumber) &&
+			 (operand1->value.character == operand2->value.character)) {
 			operator->value.number = 0;
 			operator->isNumber = 1;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			free(operand1);
+			free(operand2);
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
+		    }
+
+		    else if (operand2->isNumber && operand2->value.number == 0) {
+			operator->value.character = operand1->value.character;
+			operator->isNumber = 0;
 			operator->isTree = 0;
 			operator->isOperand = 1;
 			free(operand1);
@@ -417,7 +426,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		    }
 		}
 		
-		//// after here, not both are numbers -- reduce expressions with variables
 		else {
 		    operator->isTree = 1;
 		    operator->left = operand1;
@@ -427,7 +435,7 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 	    }
 	}
 	
-	/////////////////////////////////////////////////    after here, not both are operands -- see whether I can recursively traverse the tree and reduce sub-expressions
+	// subexpressions reductions
 	else {
 
 	    // check if sub-expressions are equal
@@ -465,7 +473,82 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		}
 	    }
 
-	    // expression -/* 1,0 here
+	    else if ((operand1->isTree && !operand2->isTree) || (!operand1->isTree && operand2->isTree)) {
+
+		if (operand2->isNumber && operator->value.character == '/') {
+
+		    if (operand2->isNumber && operand2->value.number == 1) {
+			free(operand2);
+			free(operator);
+			push(operand_stack, &operand1->elem);
+		    }
+
+		    else {
+			operator->isTree = 1;
+			operator->left = operand1;
+			operator->right = operand2;
+			push(operand_stack, &operator->elem);
+		    } 
+		}
+
+		else if (operator->value.character == '*') {
+
+		    if (operand1->isNumber && operand1->value.number == 1) {
+			free(operand1);
+			free(operator);
+			push(operand_stack, &operand2->elem);
+		    }
+			
+		    else if (operand2->isNumber && operand2->value.number == 1) {
+			free(operand2);
+			free(operator);
+			push(operand_stack, &operand1->elem);
+		    }
+
+		    else if ((operand1->isNumber && operand1->value.number == 0) ||
+			     operand2->isNumber && operand2->value.number == 0) {
+			free(operand1);
+			free(operand2);
+			operator->value.number = 0;
+			operator->isTree = 0;
+			operator->isOperand = 1;
+			operator->isNumber = 1;
+			operator->left = NULL;
+			operator->right = NULL;
+			push(operand_stack, &operator->elem);
+		    }
+
+		    else {
+			operator->isTree = 1;
+			operator->left = operand1;
+			operator->right = operand2;
+			push(operand_stack, &operator->elem);
+		    }
+		}
+
+		else if (operator->value.character == '-') {
+		    
+		    if (operand2->isNumber && operand2->value.number == 0) {
+			free(operand2);
+			free(operator);
+			push(operand_stack, &operand1->elem);
+		    }
+
+		    else {
+			operator->isTree = 1;
+			operator->left = operand1;
+			operator->right = operand2;
+			push(operand_stack, &operator->elem);
+		    }
+		}
+
+		else {
+		    operator->isTree = 1;
+		    operator->left = operand1;
+		    operator->right = operand2;
+		    push(operand_stack, &operator->elem);
+		}
+	    }
 
 	    else {
 		operator->isTree = 1;
@@ -473,13 +556,6 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		operator->right = operand2;
 		push(operand_stack, &operator->elem);
 	    }
-
-	    ///////////////////////////////////////////////////////// delete this
-	    /*operator->isTree = 1;
-	    operator->left = operand1;
-	    operator->right = operand2;
-	    push(operand_stack, &operator->elem);*/
-	    /////////////////////////////////////////////////////////
 	}
     }
     
@@ -516,7 +592,7 @@ int precedence_calculator(char operator1, char operator2) {
 
 int compare_trees(struct node *node1, struct node *node2) {
 
-    if (node1 == node1)
+    if (node1 == node2)
 	return 1;
 
     if (node1 == NULL || node2 == NULL)
@@ -533,48 +609,6 @@ int compare_trees(struct node *node1, struct node *node2) {
 		compare_trees(node1->left, node2->left) &&
 		compare_trees(node1->right, node2->right));
     }
-}
-
-void reduce(struct node *root) {
-
-    // constant folding
-    constant_folding(root);
-}
-
-void constant_folding(struct node *root) {
-
-    if (root == NULL || root->left == NULL || root->right == NULL)
-	return;
-
-    if (root->left->isOperand && root->left->isNumber == 1 && root->right->isOperand && root->right->isNumber == 1 && !root->isOperand) {
-
-	char operator = root->value.character;
-	int operand1 = root->left->value.number;
-	int operand2 = root->right->value.number;
-
-	int total;
-	if (operator == '+')
-	    total = operand1 + operand2;
-	else if (operator == '-')
-	    total = operand1 - operand2;
-	else if (operator == '*')
-	    total = operand1 * operand2;
-	else if (operator == '/')
-	    total = operand1 / operand2;
-
-	root->isOperand = 1;
-	root->isNumber = 1;
-	root->isRightLeaf = 0;
-	root->value.number = total;
-	root->left = NULL;
-	root->right = NULL;
-	root->isRightLeaf = 0;
-
-	printf("%d %c %d = %d\n", operand1, operator, operand2, total);
-    }
-
-    reduce(root->left);
-    reduce(root->right);
 }
 
 void preorder_traversal(struct node *root) {    
