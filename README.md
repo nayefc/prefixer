@@ -21,6 +21,8 @@ This will produce two executable files; `prefixer` and `test`.
 ### Prefixer:
     $ prefixer <file name> [-r]
 When running, please make sure that the file exists. Otherwise, a parsing error will be thrown. The program does not check whether the infix notation is valid or not. I might introduce this in a later version.
+The program does not check that the expression is a valid infix expression. Please make sure that you have provided a valid expression. Furthermore, the program will not work if you wrap the whole expresion \
+between parenthesis.
 
 ### Test:
     $ ./test
