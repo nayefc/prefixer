@@ -33,3 +33,9 @@ Automated testing:
 ==================
 An auotmated testing file is provided, test.c. The test file will fork the prefixer program as a child process, and use Linux syscalls to pipe the prefixer's output
 into its own file to check for its outcome. Please read the run_child method comments to see how passing of arguments have to be formatted.
+
+Considerations:
+================
+- union.... separation ints and chars to avoid a conflict between ex. 'a' and '97'
+- reduction algorithm....
+- C vs. C++....

@@ -37,6 +37,7 @@ int isOperator(char p);
 void build_expression(struct stack *operator_stack, struct stack *operand_stack, int reduce);
 int operator_rank(char operator);
 int precedence_calculator(char operator1, char operator2);
+int compare_trees(struct node *node1, struct node *node2);
 void reduce(struct node *root);
 void constant_folding(struct node *root);
 void preorder_traversal(struct node *root);
@@ -425,12 +426,60 @@ void build_expression(struct stack *operator_stack, struct stack *operand_stack,
 		}
 	    }
 	}
+	
 	/////////////////////////////////////////////////    after here, not both are operands -- see whether I can recursively traverse the tree and reduce sub-expressions
 	else {
-	    operator->isTree = 1;
+
+	    // check if sub-expressions are equal
+	    if (compare_trees(operand1, operand2)) {
+
+		if (operator->value.character == '-') {
+		    operator->value.number = 0;
+		    operator->isNumber = 1;
+		    operator->isTree = 0;
+		    operator->isOperand = 1;
+		    free(operand1);
+		    free(operand2);
+		    operator->left = NULL;
+		    operator->right = NULL;
+		    push(operand_stack, &operator->elem);
+		}
+
+		else if (operator->value.character == '/') {
+		    operator->value.number = 1;
+		    operator->isNumber = 1;
+		    operator->isTree = 0;
+		    operator->isOperand = 1;
+		    free(operand1);
+		    free(operand2);
+		    operator->left = NULL;
+		    operator->right = NULL;
+		    push(operand_stack, &operator->elem);
+		}
+
+		else {
+		    operator->isTree = 1;
+		    operator->left = operand1;
+		    operator->right = operand2;
+		    push(operand_stack, &operator->elem);
+		}
+	    }
+
+	    // expression -/* 1,0 here
+
+	    else {
+		operator->isTree = 1;
+		operator->left = operand1;
+		operator->right = operand2;
+		push(operand_stack, &operator->elem);
+	    }
+
+	    ///////////////////////////////////////////////////////// delete this
+	    /*operator->isTree = 1;
 	    operator->left = operand1;
 	    operator->right = operand2;
-	    push(operand_stack, &operator->elem);
+	    push(operand_stack, &operator->elem);*/
+	    /////////////////////////////////////////////////////////
 	}
     }
     
@@ -463,6 +512,27 @@ int precedence_calculator(char operator1, char operator2) {
     int op1rank = operator_rank(operator1);
     int op2rank = operator_rank(operator2);
     return (op1rank >= op2rank ? 1 : 0);
+}
+
+int compare_trees(struct node *node1, struct node *node2) {
+
+    if (node1 == node1)
+	return 1;
+
+    if (node1 == NULL || node2 == NULL)
+	return 0;
+
+    if (node1->isNumber && node2->isNumber) {
+	return ((node1->value.number && node2->value.number) &&
+		 compare_trees(node1->left, node2->left) &&
+		compare_trees(node1->right, node2->right));
+    }
+
+    else  {	
+	return ((node1->value.character && node2->value.character) &&
+		compare_trees(node1->left, node2->left) &&
+		compare_trees(node1->right, node2->right));
+    }
 }
 
 void reduce(struct node *root) {
