@@ -31,7 +31,7 @@ Furthermore, the program will not work if you wrap the whole expression between 
 ### Test:
     $ ./test
     
-    To add your own test cases, add them to `test.c`. Follow the conventions provided in the commented code. Once you're done, `make` and run `./test`.
+To add your own test cases, add them to `test.c`. Follow the conventions provided in the commented code. Once you're done, `make` and run `./test`.
     
 ### Clean
     $ make clean
