@@ -3,7 +3,7 @@
  * Created by: Nayef Copty
  */
 
-#include "stack.h"
+#include "Stack/stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>

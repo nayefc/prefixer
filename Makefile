@@ -1,5 +1,5 @@
 PROGS = prefixer test
-OBJECTS = prefixer.o stack.o
+OBJECTS = prefixer.o Stack/stack.o
 TESTOBJ = test.o
 CFLAGS = -Werror -Wmissing-prototypes
 LIBS = -lm
@@ -10,10 +10,10 @@ all : $(PROGS)
 # prefixer
 prefixer : $(OBJECTS)
 	$(CC) -o prefixer $(OBJECTS) $(LIBS)
-prefixer.o : prefixer.c stack.h
+prefixer.o : prefixer.c Stack/stack.h
 	$(CC) -c prefixer.c -o $@ $(CFLAGS)
-stack.o : stack.c stack.h
-	$(CC) -c stack.c -o $@ $(CFLAGS)
+stack.o : Stack./stack.c Stack/stack.h
+	$(CC) -c Stack/stack.c -o $@ $(CFLAGS)
 
 # prefixer test
 test : $(TESTOBJ)
