@@ -13,6 +13,9 @@ Currently supports:
 - Positive integers only
 
 # Usage
+## Clone Submodule
+This repo contains a `Stack` submodule. Make sure that you clone with the `--recrusive` flag to clone the submodule.
+
 ## Make
     $ make
 This will produce two executable files; `prefixer` and `test`.
